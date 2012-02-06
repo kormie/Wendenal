@@ -1,5 +1,8 @@
-require "./item"
+$LOAD_PATH << File.dirname(__FILE__)
+require "item"
+
 class Wendenal
+  
   LINE_PARSER = /(\d+) (.*) at (\d{1,2}.\d{2})/
   attr_accessor :items
 
@@ -30,13 +33,16 @@ class Wendenal
     @total_tax = @taxed_total - @original_total
   end
 
-  def print_receipt
+  def print_receipt(output=nil)
+    @receipt = ""
     @items.each do |item|
-      puts "#{item.quantity} #{item.name}: #{formated_price(item.volume_cost)}\n"
+      @receipt << "#{item.quantity} #{item.name}: #{formated_price(item.volume_cost)}\n"
     end
 
-    puts "Sales Taxes: #{formated_price(@total_tax)}\n"
-    puts "Total: #{formated_price(@taxed_total)}\n"
+    @receipt << "Sales Taxes: #{formated_price(@total_tax)}\n"
+    @receipt << "Total: #{formated_price(@taxed_total)}\n"
+    puts @receipt
+    File.new("#{output}(*RECEIPT*)", "w+").puts @receipt
   end
   
 private
@@ -53,13 +59,16 @@ private
 
 end
 
+
+##PRINT OUTPUT##
+
 ARGV.each do |file|
   w = Wendenal.new
   puts "\n===#{file}===\n\n"
   w.parse_file(file)
   w.calculate_original_total
   w.calculate_tax
-  w.print_receipt
+  w.print_receipt(file)
 end
 
 
