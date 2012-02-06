@@ -3,7 +3,8 @@
 
 class Wendenal
 
-  UNTAXED = ["book", "chocolate bar", "imported box of chocolates", "packet of headache pills"]
+  untaxed = ["book", "chocolate", "headache pills"]
+  UNTAXED_REGEX = Regexp.new(untaxed.join("|"))
 
   def parse_items
     @items = []
@@ -16,7 +17,7 @@ class Wendenal
   def calculate_tax
     tax = []
     @items.each do |item|
-      if UNTAXED.include? item[1]
+      if item[1].match(UNTAXED_REGEX)
         if item[1].include? "import"
           item[2] = taxed_cost(item[2], 5)
         end
